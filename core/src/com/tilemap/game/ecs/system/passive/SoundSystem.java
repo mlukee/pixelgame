@@ -32,7 +32,7 @@ public class SoundSystem extends EntitySystem {
     public void obstacle() {
         if (obstacleTimePlaying < 0) {
             obstacleSound.play();
-            obstacleTimePlaying = 2000; // 2 s
+            obstacleTimePlaying = 500; // 2 s
         }
     }
 

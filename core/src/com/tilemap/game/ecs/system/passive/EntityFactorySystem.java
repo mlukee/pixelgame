@@ -47,7 +47,6 @@ public class EntityFactorySystem extends EntitySystem {
     public void createPlayer() {
         PositionComponent position = engine.createComponent(PositionComponent.class);
         position.x = (GameConfig.W_WIDTH - GameConfig.PLAYER_HEIGHT) / 2;
-        position.r = 90;
 
         DimensionComponent dimension = engine.createComponent(DimensionComponent.class);
         dimension.width = GameConfig.PLAYER_WIDTH;
@@ -59,7 +58,7 @@ public class EntityFactorySystem extends EntitySystem {
 
         MovementComponent movement = engine.createComponent(MovementComponent.class);
 
-        PlayerComponent mowerComponent = engine.createComponent(PlayerComponent.class);
+        PlayerComponent playerComponent = engine.createComponent(PlayerComponent.class);
 
         WorldWrapComponent worldWrap = engine.createComponent(WorldWrapComponent.class);
 
@@ -74,7 +73,7 @@ public class EntityFactorySystem extends EntitySystem {
         entity.add(dimension);
         entity.add(bounds);
         entity.add(movement);
-        entity.add(mowerComponent);
+        entity.add(playerComponent);
         entity.add(worldWrap);
         entity.add(texture);
         entity.add(zOrder);

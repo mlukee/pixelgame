@@ -23,21 +23,23 @@ public class PlayerInputSystem extends IteratingSystem {
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         MovementComponent movement = Mappers.MOVEMENT.get(entity);
-        movement.rSpeed = 0;
 
+        // Reset movement each frame
+        movement.speedX = 0;
+        movement.speedY = 0;
+
+        // Set movement distance per frame
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            movement.rSpeed = MathUtils.clamp(movement.rSpeed + GameConfig.MAX_PLAYER_R_SPEED * deltaTime, -GameConfig.MAX_PLAYER_R_SPEED, GameConfig.MAX_PLAYER_R_SPEED);
+            movement.speedX = -GameConfig.MAX_PLAYER_SPEED;
         } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            movement.rSpeed = MathUtils.clamp(movement.rSpeed - GameConfig.MAX_PLAYER_R_SPEED * deltaTime, -GameConfig.MAX_PLAYER_R_SPEED, GameConfig.MAX_PLAYER_R_SPEED);
+            movement.speedX = GameConfig.MAX_PLAYER_SPEED;
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            movement.speed = MathUtils.clamp(movement.speed + GameConfig.MAX_PLAYER_SPEED * deltaTime, 0, GameConfig.MAX_PLAYER_SPEED);
+            movement.speedY = GameConfig.MAX_PLAYER_SPEED;
         } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            movement.speed = MathUtils.clamp(movement.speed - GameConfig.MAX_PLAYER_SPEED * deltaTime, 0, GameConfig.MAX_PLAYER_SPEED);
-        } else { // friction slows down item
-            movement.speed -= movement.speed * deltaTime;
+            movement.speedY = -GameConfig.MAX_PLAYER_SPEED;
         }
-
     }
+
 }

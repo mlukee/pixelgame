@@ -30,24 +30,26 @@ public class WorldWrapSystem extends IteratingSystem {
         DimensionComponent dimensionComponent = Mappers.DIMENSION.get(entity);
         MovementComponent movementComponent = Mappers.MOVEMENT.get(entity);
 
+        // Check and adjust the x-coordinate
         if (position.x >= GameConfig.W_WIDTH - dimensionComponent.width) {
             position.x = GameConfig.W_WIDTH - dimensionComponent.width;
-            movementComponent.speed = movementComponent.speed / 4;
-            position.r = 180 - position.r;
+            // Optionally reverse the horizontal speed
+            movementComponent.speedX = -movementComponent.speedX;
         } else if (position.x < 0) {
-            position.r = 180 - position.r;
-            movementComponent.speed = movementComponent.speed / 4;
             position.x = 0;
+            // Optionally reverse the horizontal speed
+            movementComponent.speedX = -movementComponent.speedX;
         }
 
+        // Check and adjust the y-coordinate
         if (position.y >= GameConfig.W_HEIGHT - dimensionComponent.height) {
             position.y = GameConfig.W_HEIGHT - dimensionComponent.height;
-            position.r = 360 - position.r;
-            movementComponent.speed = movementComponent.speed / 4;
+            // Optionally reverse the vertical speed
+            movementComponent.speedY = -movementComponent.speedY;
         } else if (position.y < 0) {
             position.y = 0;
-            position.r = 360 - position.r;
-            movementComponent.speed = movementComponent.speed / 4;
+            // Optionally reverse the vertical speed
+            movementComponent.speedY = -movementComponent.speedY;
         }
     }
 }

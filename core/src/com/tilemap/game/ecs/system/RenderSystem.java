@@ -65,6 +65,6 @@ public class RenderSystem extends SortedIteratingSystem {
                 dimension.width / 2, dimension.height / 2,
                 dimension.width, dimension.height,
                 1, 1,
-                position.r - 90);
+                0);
     }
 }

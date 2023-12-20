@@ -5,20 +5,20 @@ import com.badlogic.gdx.utils.Pool;
 
 public class MovementComponent implements Component, Pool.Poolable {
 
-    public float speed;
-    public float rSpeed;    // rotation speed
+    public float speedX;
+    public float speedY;
 
     @Override
     public void reset() {
-        speed = 0f;
-        rSpeed = 0f;
+        speedX = 0f;
+        speedY = 0f;
     }
 
     @Override
     public String toString() {
         return "MovementComponent{" +
-                "speed=" + speed +
-                ", rSpeed=" + rSpeed +
+                "speed=" + speedX +
+                ", speed=" + speedY +
                 '}';
     }
 }

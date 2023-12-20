@@ -36,11 +36,11 @@ public class CollisionSystem extends EntitySystem {
     public void update(float deltaTime) {
         if (GameManager.INSTANCE.isGameOver()) return;
 
-        ImmutableArray<Entity> mowers = getEngine().getEntitiesFor(FAMILY_MOWER);
+        ImmutableArray<Entity> players = getEngine().getEntitiesFor(FAMILY_MOWER);
         ImmutableArray<Entity> obstacles = getEngine().getEntitiesFor(FAMILY_OBSTACLE);
 
-        for (Entity mower : mowers) { //pick collision by tile
-            BoundsComponent firstBounds = Mappers.BOUNDS.get(mower);
+        for (Entity player : players) { //pick collision by tile
+            BoundsComponent firstBounds = Mappers.BOUNDS.get(player);
 
             if (tiledSystem.collideWith(firstBounds.rectangle)) {
                 soundSystem.pick();
