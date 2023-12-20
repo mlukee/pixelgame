@@ -50,7 +50,6 @@ public class GameScreen extends ScreenAdapter {
 
     private final AssetManager assetManager;
     private final SpriteBatch batch;
-    private final Tilemap game;
 
     private OrthographicCamera camera;
     private Viewport viewport;
@@ -62,36 +61,26 @@ public class GameScreen extends ScreenAdapter {
 
     //OrthoCachedTiledMapRenderer mapRenderer;
     public GameScreen(Tilemap game) {
-        this.game = game;
         assetManager = game.getAssetManager();
         batch = game.getBatch();
         //https://gamedev.stackexchange.com/questions/127733/libgdx-how-to-handle-touchpad-input
-    /*
-    Stage stage = new Stage();
-    Table table = new Table(skin); // You can skip table and add it directly to the stage as well.
-    Touchpad touchpad = new Touchpad(GameConfig.TOUCH_RADIUS, skin);
-    Gdx.input.setInputProcessor(stage);
-    touchpad.addListener(new ChangeListener() {
-      @Override
-      public void changed(ChangeEvent event, Actor actor) {
-        // This is run when anything is changed on this actor.
-        float deltaX = ((Touchpad) actor).getKnobPercentX();
-        float deltaY = ((Touchpad) actor).getKnobPercentY();
-        //...
-      }
-    });
-    */
     }
 
     @Override
     public void show() {
-        map = assetManager.get(AssetPaths.TILES); //Rethink add with manager?
+
+        map = assetManager.get(AssetPaths.TILES); // Load map
 
         camera = new OrthographicCamera();
         viewport = new FitViewport(GameConfig.WIDTH, GameConfig.HEIGHT, camera);
         hudViewport = new FitViewport(GameConfig.WIDTH, GameConfig.HEIGHT);
         renderer = new ShapeRenderer();
         engine = new PooledEngine();
+
+        initGame(); // Initialize the game
+    }
+
+    private void initGame(){
         //passive systems
         engine.addSystem(new EntityFactorySystem(assetManager));
         engine.addSystem(new SoundSystem(assetManager));
@@ -119,24 +108,44 @@ public class GameScreen extends ScreenAdapter {
 
         engine.addSystem(new HudRenderSystem(batch, hudViewport, font));
         GameManager.INSTANCE.resetResult();
-
-        //mapRenderer = new OrthoCachedTiledMapRenderer(map);
     }
 
     @Override
     public void render(float delta) {
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) Gdx.app.exit();
-//    if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) GameManager.INSTANCE.resetResult();
-
-
         ScreenUtils.clear(0f, 0f, 0f, 0f);
+
         engine.update(delta);
 
         if (GameManager.INSTANCE.isGameOver()) {
-            //Gdx.app.exit();
+            // Disable player input
+            engine.removeSystem(engine.getSystem(PlayerInputSystem.class));
+
+            // Check for game over controls
+            if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+                Gdx.app.exit();
+            }
+            if(Gdx.input.isKeyPressed(Input.Keys.R)) {
+                restartGame();
+            }
+        } else {
+            if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+                Gdx.app.exit();
+            }
         }
-        //     game.setScreen(new MenuScreen(game));
-        // }
+    }
+
+    private void restartGame() {
+        // Reset GameManager
+        GameManager.INSTANCE.resetResult();
+
+        // Clear all entities
+        engine.removeAllEntities();
+
+        // Reinitialize the game
+        initGame();
+
+        // Re-add PlayerInputSystem
+        engine.addSystem(new PlayerInputSystem());
     }
 
     @Override
