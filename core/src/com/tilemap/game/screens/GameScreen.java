@@ -1,6 +1,8 @@
 package com.tilemap.game.screens;
 
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
@@ -20,6 +22,8 @@ import com.tilemap.game.Tilemap;
 import com.tilemap.game.assets.AssetPaths;
 import com.tilemap.game.common.GameManager;
 import com.tilemap.game.config.GameConfig;
+import com.tilemap.game.ecs.component.MovementComponent;
+import com.tilemap.game.ecs.component.PlayerComponent;
 import com.tilemap.game.ecs.system.BoundsSystem;
 import com.tilemap.game.ecs.system.CameraMovementSystem;
 import com.tilemap.game.ecs.system.CleanUpSystem;
@@ -38,6 +42,7 @@ import com.tilemap.game.ecs.system.passive.EntityFactorySystem;
 import com.tilemap.game.ecs.system.passive.SoundSystem;
 import com.tilemap.game.ecs.system.passive.StartUpSystem;
 import com.tilemap.game.ecs.system.passive.TiledSystem;
+import com.tilemap.game.util.Mappers;
 
 /**
  * Artwork from https://goodstuffnononsense.com/about/
@@ -119,8 +124,16 @@ public class GameScreen extends ScreenAdapter {
         if (GameManager.INSTANCE.isGameOver()) {
             // Disable player input
             engine.removeSystem(engine.getSystem(PlayerInputSystem.class));
+            Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
 
-            // Check for game over controls
+            if (player != null) {
+                MovementComponent movement = Mappers.MOVEMENT.get(player);
+                if (movement != null) {
+                    // Set movement speed to 0
+                    movement.speedX = 0;
+                    movement.speedY = 0;
+                }
+            }            // Check for game over controls
             if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
                 Gdx.app.exit();
             }
