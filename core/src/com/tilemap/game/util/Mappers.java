@@ -25,6 +25,9 @@ public final class Mappers {
     public static final ComponentMapper<MovementComponent> MOVEMENT =
             ComponentMapper.getFor(MovementComponent.class);
 
+    public static final ComponentMapper<com.tilemap.game.ecs.component.PlayerComponent> PLAYER =
+            ComponentMapper.getFor(com.tilemap.game.ecs.component.PlayerComponent.class);
+
 
     public static final ComponentMapper<TextureComponent> TEXTURE =
             ComponentMapper.getFor(TextureComponent.class);

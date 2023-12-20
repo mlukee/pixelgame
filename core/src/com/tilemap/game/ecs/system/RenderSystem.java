@@ -59,12 +59,13 @@ public class RenderSystem extends SortedIteratingSystem {
         PositionComponent position = Mappers.POSITION.get(entity);
         DimensionComponent dimension = Mappers.DIMENSION.get(entity);
         TextureComponent texture = Mappers.TEXTURE.get(entity);
-
+        batch.setColor(1, 1, 1, texture.opacity);
         batch.draw(texture.region,
                 position.x, position.y,
                 dimension.width / 2, dimension.height / 2,
                 dimension.width, dimension.height,
                 1, 1,
                 0);
+        batch.setColor(1, 1, 1, 1);
     }
 }

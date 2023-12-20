@@ -23,23 +23,28 @@ public class PlayerInputSystem extends IteratingSystem {
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         MovementComponent movement = Mappers.MOVEMENT.get(entity);
+        PlayerComponent player = Mappers.PLAYER.get(entity);
 
-        // Reset movement each frame
+        // Determine the speed modifier based on the player's state
+        float speedModifier = player.isInGrass ? 0.7f : 1.0f;
+
+        // Reset movement speed
         movement.speedX = 0;
         movement.speedY = 0;
 
-        // Set movement distance per frame
+        // Adjust movement based on input
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            movement.speedX = -GameConfig.MAX_PLAYER_SPEED;
+            movement.speedX = -GameConfig.MAX_PLAYER_SPEED * speedModifier;
         } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            movement.speedX = GameConfig.MAX_PLAYER_SPEED;
+            movement.speedX = GameConfig.MAX_PLAYER_SPEED * speedModifier;
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            movement.speedY = GameConfig.MAX_PLAYER_SPEED;
+            movement.speedY = GameConfig.MAX_PLAYER_SPEED * speedModifier;
         } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            movement.speedY = -GameConfig.MAX_PLAYER_SPEED;
+            movement.speedY = -GameConfig.MAX_PLAYER_SPEED * speedModifier;
         }
     }
+
 
 }

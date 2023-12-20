@@ -21,7 +21,6 @@ public class AssetDescriptors {
     public static final AssetDescriptor<Music> BG_MUSIC =
             new AssetDescriptor<Music>(AssetPaths.BG_MUSIC, Music.class);
 
-
     public static final AssetDescriptor<TiledMap> TILES =
             new AssetDescriptor<TiledMap>(AssetPaths.TILES, TiledMap.class);
 

@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Pool;
 public class TextureComponent implements Component, Pool.Poolable {
 
     public TextureRegion region;
+    public float opacity = 1.0f;
 
     @Override
     public void reset() {

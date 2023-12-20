@@ -3,6 +3,8 @@ package com.tilemap.game.ecs.system.passive;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -16,8 +18,12 @@ import com.badlogic.gdx.utils.Array;
 import com.tilemap.game.common.GameManager;
 import com.tilemap.game.config.GameConfig;
 import com.tilemap.game.ecs.component.BoundsComponent;
+import com.tilemap.game.ecs.component.MovementComponent;
 import com.tilemap.game.ecs.component.ObstacleComponent;
+import com.tilemap.game.ecs.component.PlayerComponent;
+import com.tilemap.game.ecs.component.TextureComponent;
 import com.tilemap.game.ecs.component.WaterComponent;
+import com.tilemap.game.util.Mappers;
 import com.tilemap.game.util.OrthogonalTiledMapRendererStopStartAnimated;
 
 public class TiledSystem extends EntitySystem {
@@ -31,6 +37,7 @@ public class TiledSystem extends EntitySystem {
     private float widthMapInPx;
     private float heightMapInPx;
     private TiledMapTileLayer collideTileLayer;
+    private TiledMapTileLayer hideInGrassLayer;
     private MapLayer collideObjectsLayer;
     private MapLayer collideHousesAndTreesLayer;
     private final Rectangle tmp;
@@ -60,6 +67,7 @@ public class TiledSystem extends EntitySystem {
 
         TiledMapTileLayer tiledLayer = (TiledMapTileLayer) tiledMap.getLayers().get("background");
         collideTileLayer = (TiledMapTileLayer) tiledMap.getLayers().get("ores");
+        hideInGrassLayer = (TiledMapTileLayer) tiledMap.getLayers().get("grass");
         collideObjectsLayer = tiledMap.getLayers().get("l_waterObject");
         collideHousesAndTreesLayer = tiledMap.getLayers().get("l_houses_trees");
         widthInt = tiledLayer.getWidth();
@@ -126,18 +134,8 @@ public class TiledSystem extends EntitySystem {
         mapRenderer.render();
     }
 
-    public boolean collideTile(float x, float y) {
-        int ix = (int) (x / tileWidth);
-        int iy = (int) (y / tileHeight);
-        if (collideTileLayer.getCell(ix, iy) != null) {
-            collideTileLayer.setCell(ix, iy, null);
-            return true;
-        }
-        return false;
-    }
-
     public boolean collideWith(Rectangle rectangle) {
-        tmpArea.set(rectangle.x - tileWidth, rectangle.y - tileHeight, rectangle.width + tileWidth * 2, rectangle.height + tileHeight * 2);
+        tmpArea.set(rectangle.x - tileWidth, rectangle.y - tileHeight, rectangle.width + tileWidth, rectangle.height + tileHeight);
         int i = 0;  // init tiled checked
         if (GameConfig.debug) { // area that will be searched
             for (BoundsComponent bc : debug) {
@@ -166,12 +164,84 @@ public class TiledSystem extends EntitySystem {
                         result = true;
                     }
                 }
+                if (hideInGrassLayer.getCell(ix, iy) != null) {
+                    tmp.set(ix * tileWidth, iy * tileHeight, tileWidth, tileHeight);
+                    if (tmp.overlaps(rectangle)) {
+                        hideAndSlowPlayer();
+                    }
+                }
+//                } else {
+//                    Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class, MovementComponent.class).get()).first();
+//
+//                    PlayerComponent playerComp = Mappers.PLAYER.get(player);
+//                    TextureComponent texture = Mappers.TEXTURE.get(player);
+//                    texture.opacity = 1f;
+//                    playerComp.isInGrass = false;
+//                }
                 ix++;
                 dx += tileWidth;
             } while (dx < tmpArea.width);
             iy++;
             dy += tileHeight;
         } while (dy < tmpArea.height);
+
+        if (!result && !isInGrassArea(rectangle)) {
+            resetPlayerFromGrass();
+        }
+
         return result;
+    }
+
+    private boolean isInGrassArea(Rectangle rectangle) {
+        int startX = MathUtils.floor(rectangle.x / tileWidth);
+        int startY = MathUtils.floor(rectangle.y / tileHeight);
+        int endX = MathUtils.ceil((rectangle.x + rectangle.width) / tileWidth);
+        int endY = MathUtils.ceil((rectangle.y + rectangle.height) / tileHeight);
+
+        for (int x = startX; x < endX; x++) {
+            for (int y = startY; y < endY; y++) {
+                if (x >= 0 && y >= 0 && x < widthInt && y < heightInt) {
+                    if (hideInGrassLayer.getCell(x, y) != null) {
+                        return true; // The player is still in a grass area
+                    }
+                }
+            }
+        }
+        return false; // The player is not in a grass area
+    }
+
+    private void resetPlayerFromGrass() {
+        Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class, MovementComponent.class, TextureComponent.class).get()).first();
+        if (player != null) {
+            PlayerComponent playerComp = Mappers.PLAYER.get(player);
+            MovementComponent movement = Mappers.MOVEMENT.get(player);
+            TextureComponent texture = Mappers.TEXTURE.get(player);
+
+            if (playerComp.isInGrass) {
+                // Reset the flag
+                playerComp.isInGrass = false;
+
+                // Reset movement speed
+                movement.speedX = GameConfig.MAX_PLAYER_SPEED; // or another default speed value
+                movement.speedY = GameConfig.MAX_PLAYER_SPEED; // or another default speed value
+
+                // Reset opacity
+                texture.opacity = 1.0f; // Fully opaque
+            }
+        }
+    }
+
+
+
+    private void hideAndSlowPlayer() {
+        Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class, MovementComponent.class).get()).first();
+        TextureComponent texture = Mappers.TEXTURE.get(player);
+
+        PlayerComponent playerComp = Mappers.PLAYER.get(player);
+
+        if (!playerComp.isInGrass) {
+            playerComp.isInGrass = true;
+            texture.opacity = 0.5f;
+        }
     }
 }
