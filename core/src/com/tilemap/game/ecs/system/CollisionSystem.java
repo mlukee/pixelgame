@@ -63,6 +63,7 @@ public class CollisionSystem extends EntitySystem {
                 if (Intersector.overlaps(firstBounds.rectangle, secondBounds.rectangle)) {
                     // obstacleComponent.hit = true;
                     GameManager.INSTANCE.damage();
+                    GameManager.INSTANCE.update(deltaTime);
                     soundSystem.obstacle();
                 }
             }

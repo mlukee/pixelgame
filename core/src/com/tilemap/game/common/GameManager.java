@@ -13,6 +13,7 @@ public class GameManager {
 
     private int result;
     private int health;
+    private float lastObstacleTime;
 
     private GameManager() {
         PREFS = Gdx.app.getPreferences(GameManager.class.getSimpleName());
@@ -23,7 +24,10 @@ public class GameManager {
     }
 
     public void damage() {
+        if(lastObstacleTime > 0) return;
+
         health--;
+        lastObstacleTime = 0.2f;
 
         if (health == 0) {
             if (result > getBestResult()) setBestResult(result);
@@ -54,5 +58,9 @@ public class GameManager {
     public void setBestResult(int result) {
         PREFS.putInteger(RESULT_BEST, result);
         PREFS.flush();
+    }
+
+    public void update(float deltaTime) {
+        lastObstacleTime -= deltaTime;
     }
 }
