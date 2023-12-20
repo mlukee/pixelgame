@@ -47,6 +47,7 @@ public class EntityFactorySystem extends EntitySystem {
     public void createPlayer() {
         PositionComponent position = engine.createComponent(PositionComponent.class);
         position.x = (GameConfig.W_WIDTH - GameConfig.PLAYER_HEIGHT) / 2;
+        position.y = 120;
 
         DimensionComponent dimension = engine.createComponent(DimensionComponent.class);
         dimension.width = GameConfig.PLAYER_WIDTH;

@@ -7,6 +7,7 @@ import com.tilemap.game.ecs.component.MovementComponent;
 import com.tilemap.game.ecs.component.ObstacleComponent;
 import com.tilemap.game.ecs.component.PositionComponent;
 import com.tilemap.game.ecs.component.TextureComponent;
+import com.tilemap.game.ecs.component.WaterComponent;
 import com.tilemap.game.ecs.component.ZOrderComponent;
 
 
@@ -33,6 +34,9 @@ public final class Mappers {
 
     public static final ComponentMapper<ObstacleComponent> OBSTACLE =
             ComponentMapper.getFor(ObstacleComponent.class);
+
+    public static final ComponentMapper<WaterComponent> WATER =
+            ComponentMapper.getFor(WaterComponent.class);
 
     private Mappers() {
     }

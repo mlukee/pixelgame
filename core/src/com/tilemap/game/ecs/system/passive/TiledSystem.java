@@ -17,6 +17,7 @@ import com.tilemap.game.common.GameManager;
 import com.tilemap.game.config.GameConfig;
 import com.tilemap.game.ecs.component.BoundsComponent;
 import com.tilemap.game.ecs.component.ObstacleComponent;
+import com.tilemap.game.ecs.component.WaterComponent;
 import com.tilemap.game.util.OrthogonalTiledMapRendererStopStartAnimated;
 
 public class TiledSystem extends EntitySystem {
@@ -31,6 +32,7 @@ public class TiledSystem extends EntitySystem {
     private float heightMapInPx;
     private TiledMapTileLayer collideTileLayer;
     private MapLayer collideObjectsLayer;
+    private MapLayer collideHousesAndTreesLayer;
     private final Rectangle tmp;
     private final Rectangle tmpArea;
     private Array<BoundsComponent> debug;
@@ -59,6 +61,7 @@ public class TiledSystem extends EntitySystem {
         TiledMapTileLayer tiledLayer = (TiledMapTileLayer) tiledMap.getLayers().get("background");
         collideTileLayer = (TiledMapTileLayer) tiledMap.getLayers().get("ores");
         collideObjectsLayer = tiledMap.getLayers().get("l_waterObject");
+        collideHousesAndTreesLayer = tiledMap.getLayers().get("l_houses_trees");
         widthInt = tiledLayer.getWidth();
         heightInt = tiledLayer.getHeight();
         tileWidth = tiledLayer.getTileWidth();
@@ -82,10 +85,24 @@ public class TiledSystem extends EntitySystem {
         }
     }
 
+    private void addWater(MapLayer layer, Engine engine) {
+        MapObjects objects = layer.getObjects();
+        for (MapObject object : objects) {
+            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+            Entity entity = engine.createEntity();
+            BoundsComponent bc = engine.createComponent(BoundsComponent.class);
+            bc.rectangle.set(rectangle);
+            WaterComponent oc = engine.createComponent(WaterComponent.class);
+            entity.add(bc).add(oc);
+            engine.addEntity(entity);
+        }
+    }
+
     @Override
     public void addedToEngine(Engine engine) {
         super.addedToEngine(engine);
-        addObstacle(collideObjectsLayer, engine);
+        addWater(collideObjectsLayer, engine);
+        addObstacle(collideHousesAndTreesLayer, engine);
 
         // add debug bounds
         if (GameConfig.debug) {
