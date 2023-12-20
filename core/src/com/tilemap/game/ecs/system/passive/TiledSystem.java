@@ -241,7 +241,7 @@ public class TiledSystem extends EntitySystem {
 
         if (!playerComp.isInGrass) {
             playerComp.isInGrass = true;
-            texture.opacity = 0.5f;
+            texture.opacity = 0.7f;
         }
     }
 }

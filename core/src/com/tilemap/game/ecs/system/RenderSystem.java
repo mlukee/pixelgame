@@ -59,7 +59,9 @@ public class RenderSystem extends SortedIteratingSystem {
         PositionComponent position = Mappers.POSITION.get(entity);
         DimensionComponent dimension = Mappers.DIMENSION.get(entity);
         TextureComponent texture = Mappers.TEXTURE.get(entity);
-        batch.setColor(1, 1, 1, texture.opacity);
+        if (texture.opacity != 1.0f) {
+            batch.setColor(0.5f, 0.5f, 0.5f, 1);
+        }
         batch.draw(texture.region,
                 position.x, position.y,
                 dimension.width / 2, dimension.height / 2,
